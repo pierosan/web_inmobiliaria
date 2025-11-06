@@ -1,0 +1,24 @@
+# Archivos de cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Directorios de entorno virtual
+venv/
+
+# Base de datos de desarrollo
+db.sqlite3
+db.sqlite3-journal
+
+# Archivos de registro
+*.log
+
+# Archivos de configuracion local (si los usas)
+local_settings.py
+
+# Archivos de media subidos por los usuarios
+media/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

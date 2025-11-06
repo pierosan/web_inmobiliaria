@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1560185127-6ed189bf02f4?auto=format&fit=crop&w=1500&q=80'); background-size: cover; background-position: center;">
+    <div class="hero-content">
+        <h1>Tu mejor decisión empieza ahora</h1>
+        <p>Ofrecemos soluciones personalizadas, escuchamos tus deseos, entendemos tus necesidades y te guiamos en cada paso.</p>
+        
+        <form class="search-form" action="{# url 'url-de-busqueda' #}" method="GET">
+            <input type="text" name="query" placeholder="Ingrese una dirección, estado, ciudad, código postal">
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+</section>
+
+<section class="listings-section">
+    <h2>Propiedades Destacadas</h2>
+    {% for propiedad in object_list%}
+    <div class="listings-grid">
+    <a class="listing-card" href="{% url 'principal:propiedad_detalle' propiedad.id%}">
+            <div class="listing-image">
+                <img src="{{propiedad.imagenes.first.imagen_url}}" alt="{{propiedad.nombre}}">
+                <div class="listing-badges">
+                    <span class="badge-featured">Destacado</span>
+                    <span class="badge-status-sale">For Sale</span>
+                </div>
+            </div>
+            <div class="listing-details">
+                <h3>{{propiedad.nombre}}</h3>
+                <p class="location">{{propiedad.direccion}}</p>
+                <p class="price">S/210.000</p>
+                <div class="listing-specs">
+                    <span><i class="fa-solid fa-bed"></i> {{ propiedad.dormitorios }} dormitorios</span>
+                    <span><i class="fa-solid fa-bath"></i> {{ propiedad.banos }} Baños</span>
+                    <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area }} m²</span>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+    
+    <div class="load-more-container">
+        <a href="{% url 'principal:lista_propiedades' %}" class="btn-load-more">Cargar Más Inmuebles</a>
+    </div>
+</section>
+
+{% endblock %}

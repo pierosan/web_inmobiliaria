@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Registro de Usuario{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'signup.css' %}">
+
+<div class="contenedor-principal">
+  <div class="signup-card">
+    <h2>Registro de Usuario</h2>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="campo">
+          {{ field.label_tag }}
+          {{ field }}
+          {% for error in field.errors %}
+            <div class="error">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <input type="submit" value="Registrarse" class="btn-signup">
+    </form>
+
+    <p class="texto-secundario">
+      ¿Ya tienes cuenta? <a href="{% url 'acceso:login' %}">Inicia sesión</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

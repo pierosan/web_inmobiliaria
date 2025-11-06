@@ -1,0 +1,200 @@
+/* ==========================
+   PALETA
+========================== */
+:root {
+  --azul:   #adb1b4;  /* Fondo principal (sobrio, profesional) */
+  --marron: #7A4E2E;  /* Hover / acentos secundarios */
+  --beige:  #726049;  /* Texto secundario y bordes suaves */
+  --mostaza:#D4A017;  /* Botón / acento principal */
+  --blanco: #FFFFFF;
+  /* Si tienes header fijo en base.html, ajústalo aquí */
+  --header-height: 0px;
+}
+
+/* ==========================
+   FONDO GENERAL
+========================== */
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--blanco);
+  font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background:
+    radial-gradient(800px 400px at 5% 0%, rgba(212,160,23,0.12), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(122,78,46,0.12), transparent 60%),
+    linear-gradient(135deg, #2E3B47 0%, var(--azul) 60%, #465865 100%);
+  /* Importante: no usamos flex aquí para no pelear con el header del base.html */
+  overflow-x: hidden;
+}
+
+/* ==========================
+   CONTENEDOR CENTRADO
+========================== */
+.contenedor-principal {
+  display: grid;
+  place-items: center;
+  min-height: calc(100dvh - var(--header-height));
+  padding: clamp(16px, 3vw, 32px);
+}
+
+/* ==========================
+   TARJETAS TRANSLÚCIDAS
+========================== */
+.login-card,
+.signup-card {
+  width: min(420px, 92vw);
+  background: rgba(255, 255, 255, 0.08);          /* transparencia */
+  border: 1px solid rgba(255, 255, 255, 0.25);     /* borde suave */
+  backdrop-filter: blur(18px) saturate(110%);      /* glassmorphism */
+  -webkit-backdrop-filter: blur(18px) saturate(110%);
+  border-radius: 16px;
+  padding: 2.4rem 2rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+  text-align: center;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.login-card:hover,
+.signup-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 50px rgba(0,0,0,0.45);
+}
+
+/* ==========================
+   TITULOS Y TEXTOS
+========================== */
+.login-card h2,
+.signup-card h2 {
+  margin: 0 0 .5rem;
+  font-size: clamp(1.6rem, 2vw, 1.9rem);
+  letter-spacing: .3px;
+}
+
+.subtitle,
+.texto-secundario {
+  color: var(--beige);
+}
+
+.texto-secundario {
+  margin-top: 1.25rem;
+  font-size: .95rem;
+}
+
+.texto-secundario a {
+  color: var(--mostaza);
+  font-weight: 600;
+  text-decoration: none;
+}
+.texto-secundario a:hover { text-decoration: underline; }
+
+/* ==========================
+   FORMULARIO
+========================== */
+.campo { text-align: left; margin-bottom: .9rem; }
+
+.campo label {
+  display: block;
+  margin-bottom: .35rem;
+  color: var(--blanco);
+  font-size: .9rem;
+  opacity: .9;
+}
+
+.campo input {
+  width: 100%;
+  padding: .85rem .9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(255,255,255,.14);
+  color: var(--blanco);
+  font-size: 1rem;
+  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.campo input::placeholder { color: rgba(255,255,255,.65); }
+
+.campo input:focus {
+  outline: none;
+  background: rgba(255,255,255,.22);
+  border-color: var(--mostaza);
+  box-shadow: 0 0 0 3px rgba(212,160,23,.22);
+}
+
+/* Checkbox / opciones */
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: .5rem 0 1.2rem;
+  color: var(--beige);
+  font-size: .95rem;
+}
+.checkbox input { accent-color: var(--mostaza); }
+
+/* ==========================
+   BOTONES
+========================== */
+.btn-login,
+.btn-signup,
+.btn-principal {
+  width: 100%;
+  padding: .95rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--mostaza);
+  color: #17303E;               /* buen contraste sobre mostaza */
+  font-weight: 700;
+  letter-spacing: .3px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .25s ease, color .25s ease, box-shadow .25s ease;
+}
+
+.btn-login:hover,
+.btn-signup:hover,
+.btn-principal:hover {
+  background: var(--marron);
+  color: var(--blanco);
+  box-shadow: 0 8px 18px rgba(122,78,46,.35);
+}
+
+/* ==========================
+   MENSAJES
+========================== */
+.alert {
+  margin-bottom: 1rem;
+  padding: .8rem .9rem;
+  border-radius: 10px;
+  background: rgba(212,160,23,.16);
+  border-left: 4px solid var(--mostaza);
+  color: var(--blanco);
+  text-align: left;
+}
+
+.error {
+  color: #ffb3b3;
+  font-size: .85rem;
+  margin-top: .35rem;
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+@media (max-width: 480px) {
+  .login-card, .signup-card { padding: 1.8rem 1.2rem; }
+}
+/* === FIX: que el ancho 100% incluya padding y borde === */
+html { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+
+/* Inputs del login y signup */
+.campo input,
+.campo select,
+.campo textarea {
+  display: block;          /* ocupa toda la línea sin “centrados raros” */
+  box-sizing: border-box;  /* clave: 100% = contenido + padding + borde */
+  width: 100%;
+}

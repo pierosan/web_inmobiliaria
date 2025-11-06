@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Mi Inmobiliaria{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  integrity="sha512-4LhHd6x5DdVRpAq8pZKQvSFG6iK2I9oV6zULu3ywMpgm2d64jHxrH7j3p9EIXU2JgqDnF6EqW7bGp5YpZl1x1g=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<!-- Botón flotante de WhatsApp -->
+<a href="https://wa.me/51903423823" class="whatsapp-float" target="_blank" title="Contáctanos por WhatsApp">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<body>
+  <header>
+    {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'signup' %}
+    <nav>
+      <a href="{% url 'principal:inicio' %}">Inicio</a>
+      <a href="{% url 'principal:lista_propiedades' %}">Propiedades</a>
+      <a href="{% url 'principal:acerca' %}">Acerca</a>
+      <a href="{% url 'principal:contacto' %}">Contacto</a>
+
+      {% if user.is_authenticated %}
+          <div style="display: flex;justify-content: center;align-items: center;">{{ user.username }}</div>
+          <a href="{% url 'acceso:logout' %}">Cerrar sesión</a>
+        {% else %}
+          <a href="{% url 'acceso:login' %}">Iniciar sesión</a>
+          <a href="{% url 'acceso:registro' %}">Registrarse</a>
+        {% endif %}
+    </nav>
+    {% endif %}
+  </header>
+
+  {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'signup' %}
+    {% if messages %}
+        {% for message in messages %}
+        <script>
+          Swal.fire({
+  text: "{{ message }}",
+  icon: "success"
+});
+        </script>
+        {% endfor %}
+    {% endif %}
+  {% endif %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-column">
+      <h3>About Us</h3>
+      <p>
+        WP RESIDENCE is committed to delivering a high level of expertise,
+        customer service, and attention to detail to the marketing and sales of
+        luxury real estate, and rental properties.
+      </p>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-rss"></i></a>
+        <a href="#"><i class="fab fa-x-twitter"></i></a>
+        <a href="#"><i class="fab fa-google"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h3>Contacto</h3>
+      <p><i class="fas fa-map-marker-alt"></i> Calle de Toledo, 41, 28005 Madrid, Spain</p>
+      <p><i class="fas fa-phone"></i> (305) 555-4446</p>
+      <p><i class="fas fa-fax"></i> (305) 555-4446</p>
+      <p><i class="fas fa-envelope"></i> youremail@gmail.com</p>
+      <p><i class="fas fa-globe"></i> Nostro sitio</p>
+    </div>
+
+    <div class="footer-column">
+      <h3>SOCIAL LINKS</h3>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-whatsapp"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+        <a href="#"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>Todos los derechos reservados. <a href="#">Privacy Policy</a></p>
+  </div>
+</footer>
+</body>
+</html>

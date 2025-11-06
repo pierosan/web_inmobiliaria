@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'signup.css' %}">
+
+<div class="contenedor-principal">
+  <div class="login-card">
+    <h2>Inicio de Sesión</h2>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="campo">
+          {{ field.label_tag }}
+          {{ field }}
+          {% for error in field.errors %}
+            <div class="error">{{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <label class="checkbox">
+        <input type="checkbox" name="remember_me"> Mantener mi sesión iniciada
+      </label>
+
+      <input type="submit" value="Entrar" class="btn-login">
+    </form>
+
+    <p class="texto-secundario">
+      ¿No tienes cuenta? <a href="{% url 'acceso:registro' %}">Regístrate aquí</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
