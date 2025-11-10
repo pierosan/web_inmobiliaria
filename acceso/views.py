@@ -33,7 +33,6 @@ class vistaLogin(View):
                 request.session.set_expiry(0)
             else:
                 request.session.set_expiry(1209600)
-
             return redirect('principal:inicio') 
         else:
             messages.error(request, "Usuario o contraseña incorrectos.")

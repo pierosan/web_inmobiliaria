@@ -27,6 +27,10 @@
   </div>
   <div class="prop-head-right">
     <div class="prop-price">S/ {{ propiedad.precio|floatformat:3 }}</div>
+    <p class="prop-address">
+      <i class="fas fa-ruler-combined"></i>
+      {{ propiedad.area_m2 }} m²
+    </p>
   </div>
 </section>
 
@@ -36,27 +40,16 @@
     <h3>Descripción</h3>
     <p>{{ propiedad.descripcion }}</p>
   </div>
-
-  <aside class="prop-summary card">
-    <h3>Resumen</h3>
-    <div class="summary-grid">
-      <div class="summary-item"><i class="fas fa-bed"></i><div><strong>{{ propiedad.dormitorios }}</strong><span>Dormitorios</span></div></div>
-      <div class="summary-item"><i class="fas fa-bath"></i><div><strong>{{ propiedad.banos }}</strong><span>Baños</span></div></div>
-      <div class="summary-item"><i class="fas fa-car"></i><div><strong>{{ propiedad.garaje }}</strong><span>Garaje</span></div></div>
-      <div class="summary-item"><i class="fas fa-ruler-combined"></i><div><strong>{{ propiedad.area }} m²</strong><span>Área</span></div></div>
-      <div class="summary-item"><i class="far fa-calendar-alt"></i><div><strong>{{ propiedad.anio }}</strong><span>Antigüedad (años)</span></div></div>
-    </div>
-  </aside>
 </section>
 
 <!-- Dirección + detalles -->
 <section class="prop-info container">
   <div class="info-left card">
     <h3>Dirección del Inmueble</h3>
-    <p><strong>Dirección:</strong> {{ propiedad.direccion }}</p>
     <p><strong>Ciudad:</strong> {{ propiedad.ciudad }}</p>
-    <p><strong>Código Postal:</strong> {{ propiedad.cp }}</p>
-    <a href="https://www.google.com/maps?q={{ propiedad.latitud|unlocalize }},{{ propiedad.longitud|unlocalize }}" target="_blank" class="btn-map">
+    <p><strong>Distrito:</strong> {{ propiedad.distrito }}</p>
+    <p><strong>Dirección:</strong> {{ propiedad.direccion }}</p>
+    <a href="{{ propiedad.ubicacion_url  }}" target="_blank" class="btn-map">
       <i class="fas fa-map"></i> Abrir en Google Maps
     </a>
   </div>
@@ -64,37 +57,42 @@
   <div class="info-right card">
     <h3>Detalles de la Propiedad</h3>
     <ul>
-      <li><strong>ID de Inmueble:</strong> {{ propiedad.id }}</li>
-      <li><strong>Precio:</strong> S/ {{ propiedad.precio|floatformat:3 }}</li>
-      <li><strong>Tamaño de la Propiedad:</strong> {{ propiedad.area }} m²</li>
-      <li><strong>Tamaño del Lote:</strong> {{ propiedad.lote }} m²</li>
-      <li><strong>Habitaciones:</strong> {{ propiedad.habitaciones }}</li>
-      <li><strong>Dormitorios:</strong> {{ propiedad.dormitorios }}</li>
-      <li><strong>Baños:</strong> {{ propiedad.banos }}</li>
-      <li><strong>Año de Construcción:</strong> {{ propiedad.anio }}</li>
-      <li><strong>Parqueos:</strong> {{ propiedad.garaje }}</li>
-      <li><strong>Disponible desde:</strong> {{ propiedad.disponible }}</li>
-      <li><strong>Antigüedad:</strong> {{ propiedad.antiguedad }}</li>
+          <li><strong>Nombre:</strong> {{ propiedad.nombre }}</li>
+          <li><strong>Descripción:</strong> {{ propiedad.descripcion }}</li>
+          <li><strong>Precio:</strong> S/ {{ propiedad.precio|floatformat:2 }}</li>
+          <li><strong>Área:</strong> {{ propiedad.area_m2 }} m²</li>
+          <li><strong>Latitud:</strong> {{ propiedad.latitud }}</li>
+          <li><strong>Longitud:</strong> {{ propiedad.longitud }}</li>
+          <li><strong>Ciudad:</strong> {{ propiedad.ciudad }}</li>
+          <li><strong>Distrito:</strong> {{ propiedad.distrito }}</li>
+          <li><strong>Dirección:</strong> {{ propiedad.direccion }}</li>
+          <li><strong>URL Ubicación:</strong> <a href="{{ propiedad.ubicacion_url }}" target="_blank">Ver mapa</a></li>
+          {% if propiedad.video %}
+          <li><strong>Video:</strong> <a href="{{ propiedad.video }}" target="_blank">Ver video</a></li>
+          {% endif %}
+          <li><strong>Agregado el:</strong> {{ propiedad.creado_en }}</li>
     </ul>
   </div>
 </section>
 
 <!-- Video -->
+{% if propiedad.video %}
 <section class="prop-video container">
   <h3>Video del Inmueble</h3>
   <div class="video-wrapper">
     <iframe
-  width="100%" height="450"
-  src="{{ propiedad.video }}"
-  title="Video del inmueble"
-  frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  allowfullscreen
-  referrerpolicy="strict-origin-when-cross-origin">
-</iframe>
+      width="100%" height="450"
+      src="{{ propiedad.video }}"
+      title="Video del inmueble"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin">
+    </iframe>
 
   </div>
 </section>
+{% endif %}
 
 <!-- Mapa -->
 <section class="prop-map container">

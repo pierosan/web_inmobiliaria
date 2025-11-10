@@ -30,11 +30,9 @@
             <div class="listing-details">
                 <h3>{{propiedad.nombre}}</h3>
                 <p class="location">{{propiedad.direccion}}</p>
-                <p class="price">S/210.000</p>
+                <p class="price">S/{{propiedad.precio}}</p>
                 <div class="listing-specs">
-                    <span><i class="fa-solid fa-bed"></i> {{ propiedad.dormitorios }} dormitorios</span>
-                    <span><i class="fa-solid fa-bath"></i> {{ propiedad.banos }} Baños</span>
-                    <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area }} m²</span>
+                    <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area_m2 }} m²</span>
                 </div>
             </div>
         </a>

@@ -1,7 +1,37 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Propiedades{% endblock %}
 {% block content %}
-  <h1>Propiedades</h1>
-  
-  
+<section class="listings-section">
+  <h2>Propiedades</h2>
+
+  <div class="listings-grid">
+    {% for propiedad in object_list %}
+      <a class="listing-card" href="{% url 'principal:propiedad_detalle' propiedad.id %}">
+        <div class="listing-image">
+          {% if propiedad.imagenes.first %}
+            <img src="{{ propiedad.imagenes.first.imagen_url }}" alt="{{ propiedad.nombre }}">
+          {% else %}
+            <img src="https://via.placeholder.com/800x500?text=Sin+imagen" alt="Sin imagen">
+          {% endif %}
+          <div class="listing-badges">
+            <span class="badge-featured">Destacado</span>
+            <span class="badge-status-sale">For Sale</span>
+          </div>
+        </div>
+        <div class="listing-details">
+          <h3>{{ propiedad.nombre }}</h3>
+          <p class="location">{{ propiedad.direccion }}, {{ propiedad.ciudad }}</p>
+          <p class="price">S/{{ propiedad.precio }}</p>
+          <div class="listing-specs">
+            <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area_m2 }} m²</span>
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <p class="center mute">No se encontraron propiedades.</p>
+    {% endfor %}
+  </div>
+</section>
+
 {% endblock %}

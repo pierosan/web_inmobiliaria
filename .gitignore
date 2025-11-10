@@ -22,3 +22,6 @@ media/
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+
+# Variables de entorno locales (no subir al repositorio)
+.env
