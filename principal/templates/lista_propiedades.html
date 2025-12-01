@@ -137,15 +137,14 @@
 
   <div class="listings-grid">
     {% for propiedad in object_list %}
+        <a href="{% url 'principal:propiedad_detalle' propiedad.id %}" class="listing-card-link">
         <div class="listing-card">
             <div class="listing-image">
-                <a href="{% url 'principal:propiedad_detalle' propiedad.id %}" style="display:block; height:100%;">
                     {% if propiedad.imagenes.first %}
                         <img src="{{ propiedad.imagenes.first.imagen.url }}" alt="{{ propiedad.nombre }}">
                     {% else %}
                         <img src="https://dummyimage.com/600x400/e0e0e0/757575.png&text=Sin+Imagen" alt="Imagen no disponible">
                     {% endif %}
-                </a>
                 <div class="listing-badges">
                     {% if propiedad.tipo == 'VENTA' %}
                         <span class="badge-status-sale">Venta</span>
@@ -162,7 +161,7 @@
             </div>
             
             <div class="listing-details">
-                <h3><a href="{% url 'principal:propiedad_detalle' propiedad.id %}">{{ propiedad.nombre }}</a></h3>
+                <h3>{{ propiedad.nombre }}</h3>
                 <p class="location"><i class="fa-solid fa-location-dot"></i> {{ propiedad.distrito }}, {{ propiedad.ciudad }}</p>
                 
                 <p class="price">
@@ -174,17 +173,13 @@
                 </p>
                 
                 <div class="listing-specs">
-                    <span><i class="fa-solid fa-bed"></i> {{ propiedad.dormitorios }} Bed</span>
-                    <span><i class="fa-solid fa-bath"></i> {{ propiedad.banos }} Bath</span>
+                    <span><i class="fa-solid fa-bed"></i> {{ propiedad.dormitorios }} Dormitorios</span>
+                    <span><i class="fa-solid fa-bath"></i> {{ propiedad.banos }} Baños</span>
                     <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area_m2|floatformat:0 }} m²</span>
-                </div>
-                
-                <div class="listing-agent">
-                   <div style="flex:1;"></div> <!-- Spacer -->
-                   <a href="{% url 'principal:propiedad_detalle' propiedad.id %}" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Ver Detalles</a>
                 </div>
             </div>
         </div>
+        </a>
     {% empty %}
       <p style="text-align:center; width:100%; col-span:3;">No hay propiedades registradas aún.</p>
     {% endfor %}

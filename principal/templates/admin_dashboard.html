@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Panel de Administración - Mi Inmobiliaria{% endblock %}
+{% block title %}Panel de Administración - {{ config_web.agente_principal.get_full_name|default:"Mi Inmobiliaria" }}{% endblock %}
 
 {% block content %}
 <style>

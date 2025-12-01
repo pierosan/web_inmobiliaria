@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Confirmar Eliminación - Mi Inmobiliaria{% endblock %}
+{% block title %}Confirmar Eliminación - {{ config_web.agente_principal.get_full_name|default:"Mi Inmobiliaria" }}{% endblock %}
 
 {% block content %}
 <div style="max-width: 600px; margin: 4rem auto; padding: 0 1rem; text-align: center;">

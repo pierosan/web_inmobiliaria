@@ -341,6 +341,20 @@ header nav {
   display: grid; gap: 1.25rem;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
+
+/* Make entire card clickable */
+.listings-grid a.listing-card-link {
+  display: block; /* Make the entire link behave as a block element */
+  text-decoration: none; /* Remove underline from the link */
+  color: inherit; /* Inherit color from parent, so text inside doesn't turn blue */
+  /* Other styles (like box-shadow, transform) are applied to .listing-card itself */
+}
+
+.listings-grid a.listing-card-link:hover .listing-card {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(0,0,0,.14);
+}
+
 .listing-card {
   background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
   overflow: hidden; display: flex; flex-direction: column;
@@ -389,6 +403,16 @@ header nav {
 }
 .prop-desc h3{ margin:.25rem 0 .75rem; }
 .prop-desc p{ margin:0; text-align:justify; }
+
+/* General card style for detail sections */
+.detail-card {
+  background: var(--card); /* white */
+  padding: 1.5rem; /* similar to existing card padding */
+  border-radius: var(--radius); /* 16px */
+  box-shadow: var(--shadow); /* 0 8px 24px rgba(0,0,0,.08) */
+  margin-bottom: 2rem; /* spacing between cards */
+}
+
 .card{ background:#fff; border-radius:14px; box-shadow: var(--shadow); padding:1.25rem 1.25rem 1.1rem; }
 .prop-summary h3{ margin-top:0; }
 .summary-grid{ display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:1rem 1.25rem; margin-top:1rem; }

@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}Mi Inmobiliaria{% endblock %}</title>
+  <title>{% block title %}{{ config_web.agente_principal.get_full_name|default:"Mi Inmobiliaria" }}{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'styles.css' %}?v=1.2">
   <link
   rel="stylesheet"
@@ -27,7 +27,7 @@
       <div class="nav-left">
         <a href="{% url 'principal:inicio' %}" class="logo">
             <i class="fa-solid fa-house-chimney" style="color: var(--brand); font-size: 1.5rem;"></i>
-            <span>Mi Inmobiliaria</span>
+            <span>{{ config_web.agente_principal.get_full_name|default:"Mi Inmobiliaria" }}</span>
         </a>
       </div>
 

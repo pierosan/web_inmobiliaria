@@ -40,8 +40,8 @@
 </section>
 
 <!-- Resumen de características principales -->
-<section class="container" style="margin-bottom: 2rem;">
-  <div class="features-summary" style="display: flex; gap: 2rem; background: #f8f9fa; padding: 1.5rem; border-radius: 8px; justify-content: space-around; flex-wrap: wrap;">
+<section class="container detail-card">
+  <div class="features-summary" style="display: flex; gap: 2rem; justify-content: space-around; flex-wrap: wrap;">
     <div class="feature-item" style="text-align: center;">
       <i class="fas fa-ruler-combined" style="font-size: 1.5rem; color: #3498db; margin-bottom: 0.5rem; display: block;"></i>
       <strong>{{ propiedad.area_m2 }}</strong> m²
@@ -64,13 +64,13 @@
 <section class="prop-body container" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
   <!-- Columna Izquierda -->
   <div class="main-content">
-    <div class="prop-desc" style="margin-bottom: 2rem;">
+    <div class="detail-card">
       <h3 style="border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1rem;">Descripción</h3>
       <p style="line-height: 1.6; color: #444;">{{ propiedad.descripcion }}</p>
     </div>
 
     <!-- Detalles Detallados -->
-    <div class="prop-details" style="margin-bottom: 2rem;">
+    <div class="detail-card">
       <h3 style="border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1rem;">Detalles Adicionales</h3>
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <p><strong>ID Propiedad:</strong> #{{ propiedad.id }}</p>
@@ -85,7 +85,7 @@
 
      <!-- Planos -->
     {% if propiedad.planos_imagen %}
-    <div class="prop-plans" style="margin-bottom: 2rem;">
+    <div class="detail-card">
       <h3 style="border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1rem;">Planos</h3>
       <img src="{{ propiedad.planos_imagen.url }}" alt="Planos de {{ propiedad.nombre }}" style="max-width: 100%; border-radius: 8px; border: 1px solid #ddd;">
     </div>
@@ -93,7 +93,7 @@
 
     <!-- Video -->
     {% if propiedad.video %}
-    <section class="prop-video" style="margin-bottom: 2rem;">
+    <div class="detail-card">
       <h3 style="border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1rem;">Video del Inmueble</h3>
       <div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
         <iframe
@@ -106,12 +106,12 @@
           allowfullscreen>
         </iframe>
       </div>
-    </section>
+    </div>
     {% endif %}
     
     <!-- Mapa -->
     {% if propiedad.latitud and propiedad.longitud %}
-    <section class="prop-map" style="margin-bottom: 2rem;">
+    <div class="detail-card">
       <h3 style="border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-bottom: 1rem;">Ubicación</h3>
       <div class="map-wrapper">
          <div id="map-detail" style="height: 350px; border: 1px solid #ddd; border-radius: 8px;"></div>
@@ -144,14 +144,14 @@
               }
           });
       </script>
-    </section>
+    </div>
     {% endif %}
   </div>
 
   <!-- Columna Derecha (Agente y Contacto) -->
   <aside class="sidebar">
     {% if propiedad.agente_inmobiliario %}
-    <div class="agent-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+    <div class="detail-card">
       <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--fg); border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Agente Inmobiliario</h3>
       
       <!-- 1. Foto Centrada -->
@@ -189,7 +189,7 @@
     </div>
     {% endif %}
 
-    <div class="location-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <div class="detail-card">
       <h3>Resumen Ubicación</h3>
       <ul style="list-style: none; padding: 0;">
         <li style="margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt" style="color: #e74c3c; width: 20px;"></i> <strong>Ciudad:</strong> {{ propiedad.ciudad }}</li>
