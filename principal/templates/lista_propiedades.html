@@ -1,37 +1,243 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
+
 {% block title %}Propiedades{% endblock %}
+
 {% block content %}
-<section class="listings-section">
+
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<style>
+    #map-container {
+        width: min(1150px, 92%);
+        margin: 2rem auto;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    #map {
+        height: 400px;
+        width: 100%;
+        z-index: 1; /* Ensure it stays below navbar dropdowns */
+    }
+    .custom-popup .leaflet-popup-content-wrapper {
+        border-radius: 12px;
+        padding: 0;
+        overflow: hidden;
+    }
+    .custom-popup .leaflet-popup-content {
+        margin: 0;
+        width: 200px;
+    }
+    .popup-img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        display: block;
+    }
+    .popup-info {
+        padding: 0.8rem;
+    }
+    .popup-info h4 {
+        margin: 0 0 0.3rem;
+        font-size: 1rem;
+        color: #333;
+    }
+    .popup-info p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    .popup-price {
+        font-weight: bold;
+        color: var(--brand);
+        margin-top: 0.3rem !important;
+    }
+</style>
+
+<!-- Map Section -->
+<div id="map-container">
+    <div id="map"></div>
+</div>
+
+<!-- Filter Section -->
+<div class="container">
+    <form method="GET" class="filter-bar">
+        <div class="filter-group">
+            <label for="tipo">Tipo</label>
+            <select name="tipo" id="tipo">
+                <option value="">Todos</option>
+                {% for code, name in tipos_choices %}
+                <option value="{{ code }}" {% if request.GET.tipo == code %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="categoria">Categoría</label>
+            <select name="categoria" id="categoria">
+                <option value="">Todas</option>
+                {% for code, name in categorias_choices %}
+                <option value="{{ code }}" {% if request.GET.categoria == code %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="departamento">Departamento</label>
+            <select name="departamento" id="departamento">
+                <option value="">Todos</option>
+                {% for dep in departamentos %}
+                <option value="{{ dep }}" {% if request.GET.departamento == dep %}selected{% endif %}>{{ dep }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="distrito">Distrito</label>
+            <select name="distrito" id="distrito">
+                <option value="">Todos</option>
+                {% for dist in distritos %}
+                <option value="{{ dist }}" {% if request.GET.distrito == dist %}selected{% endif %}>{{ dist }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="orden">Ordenar por</label>
+            <select name="orden" id="orden">
+                <option value="reciente" {% if request.GET.orden == 'reciente' %}selected{% endif %}>Más Recientes</option>
+                <option value="antiguo" {% if request.GET.orden == 'antiguo' %}selected{% endif %}>Más Antiguos</option>
+                <option value="precio_asc" {% if request.GET.orden == 'precio_asc' %}selected{% endif %}>Precio: Bajo a Alto</option>
+                <option value="precio_desc" {% if request.GET.orden == 'precio_desc' %}selected{% endif %}>Precio: Alto a Bajo</option>
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="btn-filter"><i class="fa-solid fa-filter"></i> Filtrar</button>
+            {% if request.GET %}
+            <a href="{% url 'principal:lista_propiedades' %}" class="btn-reset" title="Limpiar filtros"><i class="fa-solid fa-rotate-left"></i></a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<section class="listings-section" style="padding-top: 1rem;">
   <h2>Propiedades</h2>
 
   <div class="listings-grid">
     {% for propiedad in object_list %}
-      <a class="listing-card" href="{% url 'principal:propiedad_detalle' propiedad.id %}">
-        <div class="listing-image">
-          {% if propiedad.imagenes.first %}
-            <img src="{{ propiedad.imagenes.first.imagen_url }}" alt="{{ propiedad.nombre }}">
-          {% else %}
-            <img src="https://via.placeholder.com/800x500?text=Sin+imagen" alt="Sin imagen">
-          {% endif %}
-          <div class="listing-badges">
-            <span class="badge-featured">Destacado</span>
-            <span class="badge-status-sale">For Sale</span>
-          </div>
+        <div class="listing-card">
+            <div class="listing-image">
+                <a href="{% url 'principal:propiedad_detalle' propiedad.id %}" style="display:block; height:100%;">
+                    {% if propiedad.imagenes.first %}
+                        <img src="{{ propiedad.imagenes.first.imagen.url }}" alt="{{ propiedad.nombre }}">
+                    {% else %}
+                        <img src="https://dummyimage.com/600x400/e0e0e0/757575.png&text=Sin+Imagen" alt="Imagen no disponible">
+                    {% endif %}
+                </a>
+                <div class="listing-badges">
+                    {% if propiedad.tipo == 'VENTA' %}
+                        <span class="badge-status-sale">Venta</span>
+                    {% elif propiedad.tipo == 'ALQUILER' %}
+                        <span class="badge-status-rent">Alquiler</span>
+                    {% else %}
+                        <span class="badge-featured">{{ propiedad.get_tipo_display }}</span>
+                    {% endif %}
+                    
+                    {% if propiedad.estado_propiedad == 'NUEVO' %}
+                        <span class="badge-featured">Nuevo</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="listing-details">
+                <h3><a href="{% url 'principal:propiedad_detalle' propiedad.id %}">{{ propiedad.nombre }}</a></h3>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> {{ propiedad.distrito }}, {{ propiedad.ciudad }}</p>
+                
+                <p class="price">
+                    {% if propiedad.tipo == 'ALQUILER' %}
+                        S/ {{ propiedad.precio|floatformat:0|intcomma }} <span style="font-size:0.8em; font-weight:400; color:#666;">/mes</span>
+                    {% else %}
+                        S/ {{ propiedad.precio|floatformat:0|intcomma }}
+                    {% endif %}
+                </p>
+                
+                <div class="listing-specs">
+                    <span><i class="fa-solid fa-bed"></i> {{ propiedad.dormitorios }} Bed</span>
+                    <span><i class="fa-solid fa-bath"></i> {{ propiedad.banos }} Bath</span>
+                    <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area_m2|floatformat:0 }} m²</span>
+                </div>
+                
+                <div class="listing-agent">
+                   <div style="flex:1;"></div> <!-- Spacer -->
+                   <a href="{% url 'principal:propiedad_detalle' propiedad.id %}" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Ver Detalles</a>
+                </div>
+            </div>
         </div>
-        <div class="listing-details">
-          <h3>{{ propiedad.nombre }}</h3>
-          <p class="location">{{ propiedad.direccion }}, {{ propiedad.ciudad }}</p>
-          <p class="price">S/{{ propiedad.precio }}</p>
-          <div class="listing-specs">
-            <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area_m2 }} m²</span>
-          </div>
-        </div>
-      </a>
     {% empty %}
-      <p class="center mute">No se encontraron propiedades.</p>
+      <p style="text-align:center; width:100%; col-span:3;">No hay propiedades registradas aún.</p>
     {% endfor %}
   </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map centered on a default location (e.g., Lima)
+        // If there are markers, we will fit bounds to them.
+        var map = L.map('map').setView([-12.0464, -77.0428], 12); // Default center (Lima)
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var markers = [];
+        var bounds = L.latLngBounds();
+
+        // Iterate over properties to create markers
+        {% for propiedad in object_list %}
+            {% if propiedad.latitud and propiedad.longitud %}
+                var lat = {{ propiedad.latitud|stringformat:".6f" }}; // Use stringformat to ensure dot decimal
+                var lng = {{ propiedad.longitud|stringformat:".6f" }};
+                var title = "{{ propiedad.nombre|escapejs }}";
+                var price = "S/ {{ propiedad.precio|floatformat:0|intcomma }}";
+                var url = "{% url 'principal:propiedad_detalle' propiedad.id %}";
+                
+                // Image handling
+                {% if propiedad.imagenes.first %}
+                    var imgUrl = "{{ propiedad.imagenes.first.imagen.url }}";
+                {% else %}
+                    var imgUrl = "https://dummyimage.com/600x400/e0e0e0/757575.png&text=Sin+Imagen";
+                {% endif %}
+
+                var popupContent = `
+                    <div class="custom-popup-content">
+                        <a href="${url}" style="display:block;">
+                            <img src="${imgUrl}" class="popup-img" alt="${title}">
+                            <div class="popup-info">
+                                <h4>${title}</h4>
+                                <p class="popup-price">${price}</p>
+                            </div>
+                        </a>
+                    </div>
+                `;
+
+                var marker = L.marker([lat, lng]).addTo(map);
+                marker.bindPopup(popupContent, {className: 'custom-popup'});
+                
+                markers.push(marker);
+                bounds.extend([lat, lng]);
+            {% endif %}
+        {% endfor %}
+
+        // Adjust map view to fit all markers if any exist
+        if (markers.length > 0) {
+            map.fitBounds(bounds, {padding: [50, 50]});
+        }
+    });
+</script>
 
 {% endblock %}

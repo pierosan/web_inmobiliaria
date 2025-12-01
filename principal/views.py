@@ -21,6 +21,52 @@ class vistaListaPropiedades(generic.ListView):
     model = Propiedad
     template_name = "lista_propiedades.html"
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        
+        # Filtering
+        tipo = self.request.GET.get('tipo')
+        categoria = self.request.GET.get('categoria')
+        departamento = self.request.GET.get('departamento')
+        distrito = self.request.GET.get('distrito')
+        
+        if tipo:
+            qs = qs.filter(tipo=tipo)
+        if categoria:
+            qs = qs.filter(categoria=categoria)
+        if departamento:
+            qs = qs.filter(departamento=departamento)
+        if distrito:
+            qs = qs.filter(distrito=distrito)
+            
+        # Ordering
+        orden = self.request.GET.get('orden')
+        if orden == 'precio_asc':
+            qs = qs.order_by('precio')
+        elif orden == 'precio_desc':
+            qs = qs.order_by('-precio')
+        elif orden == 'antiguo':
+            qs = qs.order_by('creado_en')
+        else:
+            # Default: Recientes primero
+            qs = qs.order_by('-creado_en')
+            
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Pass distinct values for dropdowns
+        # Note: In a real large-scale app, you might cache these or optimize query
+        context['distritos'] = Propiedad.objects.values_list('distrito', flat=True).distinct().order_by('distrito')
+        context['departamentos'] = Propiedad.objects.values_list('departamento', flat=True).distinct().order_by('departamento')
+        
+        # Pass choices from model (generic View doesn't pass them automatically)
+        context['tipos_choices'] = Propiedad.TIPO_OFERTA_CHOICES
+        context['categorias_choices'] = Propiedad.CATEGORIA_CHOICES
+        
+        return context
+
 class vistaDetallePropiedad(generic.DetailView):
     model = Propiedad
     template_name = "detalle_propiedad.html"
