@@ -1,5 +1,44 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Contacto{% endblock %}
+
 {% block content %}
-  <h1>Contáctanos</h1>
+<div class="contact-page-container">
+  <div class="contact-profile-card">
+    <!-- Left Side: Info -->
+    <div class="contact-info-side">
+      <h1>Aguila Morena</h1>
+      
+      <div class="bio-text">
+        <p>Soy agente inmobiliario, especializada en la comercialización de propiedades comerciales, industriales y terrenos.</p>
+        <p>Ofrezco soluciones personalizadas: escucho tus deseos, comprendo tus necesidades y te acompaño en cada paso del proceso.</p>
+        <p>Desde hace 3 años ayudo a personas y empresas a encontrar el lugar donde comienzan sus mejores historias.</p>
+      </div>
+
+      <div class="contact-details">
+        <a href="mailto:yeas2509@gmail.com" class="email-link">
+          <i class="fa-regular fa-envelope"></i> yeas2509@gmail.com
+        </a>
+      </div>
+
+      <div class="social-links-row">
+        <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="https://wa.me/51903423823" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="#" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+
+    <!-- Right Side: Image -->
+    <div class="contact-image-side">
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" alt="Aguila Morena">
+      <div class="priority-badge">
+        Tu búsqueda es mi prioridad
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

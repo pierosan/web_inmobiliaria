@@ -730,3 +730,118 @@ header nav {
     width: 100%;
   }
 }
+
+/* ====== Contact Profile Card (Nuevo) ====== */
+.contact-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem;
+  background: #fff; /* Or kept transparent if body bg is preferred */
+}
+
+.contact-profile-card {
+  background: #fff;
+  display: flex;
+  width: min(1000px, 95%);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.contact-info-side {
+  flex: 1;
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.contact-info-side h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 1.5rem;
+}
+
+.bio-text p {
+  color: #555;
+  margin-bottom: 1rem;
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+
+.contact-details {
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  color: #444;
+  text-decoration: none;
+  font-weight: 500;
+}
+.email-link:hover {
+  color: var(--brand);
+}
+
+.social-links-row {
+  display: flex;
+  gap: 1.2rem;
+}
+.social-links-row a {
+  color: #888;
+  font-size: 1.2rem;
+  transition: color 0.2s;
+}
+.social-links-row a:hover {
+  color: var(--brand);
+}
+
+.contact-image-side {
+  flex: 1;
+  position: relative;
+  background: #f0f0f0;
+}
+
+.contact-image-side img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.priority-badge {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #134e4a; /* Dark Teal */
+  color: #fff;
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  font-style: italic;
+  font-family: serif; /* Gives it that classic look */
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 900px) {
+  .contact-profile-card {
+    flex-direction: column;
+  }
+  .contact-info-side {
+    padding: 2.5rem;
+    order: 2;
+  }
+  .contact-image-side {
+    height: 400px;
+    order: 1;
+  }
+}
