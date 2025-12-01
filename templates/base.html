@@ -43,8 +43,12 @@
         {% if user.is_authenticated %}
           <div class="user-menu-container">
              <div class="user-icon">
-                 <!-- Icono genérico de usuario -->
-                 <i class="fa-solid fa-circle-user"></i>
+                 {% if user.is_authenticated and user.perfil_agente.foto %}
+                   <img src="{{ user.perfil_agente.foto.url }}" alt="{{ user.username }}" class="main-agent-avatar" style="width: 30px; height: 30px; object-fit: cover; border-radius: 50%;">
+                 {% else %}
+                   <!-- Icono genérico de usuario -->
+                   <i class="fa-solid fa-circle-user"></i>
+                 {% endif %}
              </div>
              
              <button class="menu-toggle" id="menuToggle">
@@ -107,7 +111,13 @@
     <!-- Left Side: About Text -->
     <div class="footer-about">
       <h3>Sobre mi:</h3>
-      <p>Soy agente inmobiliario, especializada en la comercialización de propiedades comerciales, industriales y terrenos.</p>
+      <p>
+          {% if config_web.agente_principal and config_web.agente_principal.perfil_agente.biografia %}
+            {{ config_web.agente_principal.perfil_agente.biografia|truncatewords:30 }}
+          {% else %}
+            Soy agente inmobiliario, especializada en la comercialización de propiedades comerciales, industriales y terrenos.
+          {% endif %}
+      </p>
     </div>
 
     <!-- Right Side: Copyright & Signature -->
@@ -116,7 +126,9 @@
       <!-- Signature/Logo Placeholder -->
       <div class="footer-signature">
          <!-- Using text for now or an image if available -->
-         <span style="font-family: cursive; font-size: 1.5rem; color: #ccc;">Aguila Morena</span>
+         <span style="font-family: cursive; font-size: 1.5rem; color: #ccc;">
+             {{ config_web.agente_principal.get_full_name|default:"Mi Inmobiliaria" }}
+         </span>
       </div>
     </div>
   </div>

@@ -1,44 +1,63 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Contacto{% endblock %}
+{% block title %}Contacto - {{ config_web.agente_principal.get_full_name|default:"Mi Inmobiliaria" }}{% endblock %}
 
 {% block content %}
-<div class="contact-page-container">
+<section class="contact-page-container">
   <div class="contact-profile-card">
-    <!-- Left Side: Info -->
+    <!-- Lado de Información de Contacto -->
     <div class="contact-info-side">
-      <h1>Aguila Morena</h1>
-      
-      <div class="bio-text">
-        <p>Soy agente inmobiliario, especializada en la comercialización de propiedades comerciales, industriales y terrenos.</p>
-        <p>Ofrezco soluciones personalizadas: escucho tus deseos, comprendo tus necesidades y te acompaño en cada paso del proceso.</p>
-        <p>Desde hace 3 años ayudo a personas y empresas a encontrar el lugar donde comienzan sus mejores historias.</p>
-      </div>
+      {% if config_web.agente_principal %}
+        <h1>Contáctame, soy {{ config_web.agente_principal.get_full_name|default:"tu agente de confianza" }}</h1>
+        
+        <div class="bio-text">
+          <p>
+            {% if config_web.agente_principal.perfil_agente.biografia %}
+              {{ config_web.agente_principal.perfil_agente.biografia }}
+            {% else %}
+              Estoy aquí para ayudarte a encontrar la propiedad perfecta. No dudes en contactarme para cualquier consulta, resolveré tus dudas de forma rápida y eficiente.
+            {% endif %}
+          </p>
+        </div>
 
-      <div class="contact-details">
-        <a href="mailto:yeas2509@gmail.com" class="email-link">
-          <i class="fa-regular fa-envelope"></i> yeas2509@gmail.com
-        </a>
-      </div>
+        <div class="contact-details">
+          {% if config_web.agente_principal.email %}
+            <a href="mailto:{{ config_web.agente_principal.email }}" class="email-link">
+              <i class="fa-regular fa-envelope"></i> {{ config_web.agente_principal.email }}
+            </a>
+          {% endif %}
+        </div>
 
-      <div class="social-links-row">
-        <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="https://wa.me/51903423823" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-        <a href="#" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-        <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-        <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-        <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-      </div>
+        <div class="social-links-row">
+          {% if config_web.agente_principal.perfil_agente.telefono %}
+            <a href="https://wa.me/{{ config_web.agente_principal.perfil_agente.get_whatsapp_number }}" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          {% endif %}
+          <!-- Otros enlaces de redes sociales si se añaden al modelo Agente -->
+          <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      {% else %}
+        <h1>Contáctanos</h1>
+        <div class="bio-text">
+          <p>Puedes contactarnos a través de los siguientes medios.</p>
+        </div>
+        <div class="contact-details">
+          <p>Email: info@miinmobiliaria.com</p>
+          <p>Teléfono: +51 987 654 321</p>
+        </div>
+      {% endif %}
     </div>
 
-    <!-- Right Side: Image -->
+    <!-- Lado de Imagen -->
     <div class="contact-image-side">
-      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" alt="Aguila Morena">
-      <div class="priority-badge">
-        Tu búsqueda es mi prioridad
-      </div>
+      {% if config_web.agente_principal and config_web.agente_principal.perfil_agente.foto %}
+        <img src="{{ config_web.agente_principal.perfil_agente.foto.url }}" alt="{{ config_web.agente_principal.get_full_name }}">
+      {% else %}
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80" alt="Agente Inmobiliario">
+      {% endif %}
+      <span class="priority-badge">Contacto Principal</span>
     </div>
   </div>
-</div>
+</section>
 {% endblock %}

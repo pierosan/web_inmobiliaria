@@ -1,15 +1,25 @@
 from django import forms
-from .models import Propiedad, ImagenPropiedad
+from .models import Propiedad, ImagenPropiedad, ConfiguracionWeb
 from django.contrib.auth import get_user_model # To get the User model
 from django.forms import inlineformset_factory
 from django.contrib.auth.forms import UserCreationForm
 
 User = get_user_model()
 
+class ConfiguracionWebForm(forms.ModelForm):
+    class Meta:
+        model = ConfiguracionWeb
+        fields = ['agente_principal']
+        widgets = {
+            'agente_principal': forms.Select(attrs={'class': 'form-control'})
+        }
+
 class AgenteForm(UserCreationForm):
     # Campos extra del perfil de agente
     foto = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}))
     telefono = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Teléfono'}))
+    biografia = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Biografía breve...'}))
+    es_administrador = forms.BooleanField(required=False, label="¿Es Administrador?", help_text="Si se marca, el usuario tendrá permisos totales (Superusuario).")
 
     class Meta:
         model = User
@@ -24,12 +34,14 @@ class AgenteForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_staff = True # Mark as staff/agent
+        user.is_superuser = self.cleaned_data['es_administrador']
         if commit:
             user.save()
             # Guardar datos del perfil
             if hasattr(user, 'perfil_agente'):
                 perfil = user.perfil_agente
                 perfil.telefono = self.cleaned_data['telefono']
+                perfil.biografia = self.cleaned_data['biografia']
                 if self.cleaned_data['foto']:
                     perfil.foto = self.cleaned_data['foto']
                 perfil.save()
@@ -39,6 +51,8 @@ class AgenteEditForm(forms.ModelForm):
     # Campos extra del perfil de agente
     foto = forms.ImageField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control-file'}))
     telefono = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    biografia = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}))
+    es_administrador = forms.BooleanField(required=False, label="¿Es Administrador?", help_text="Si se marca, el usuario tendrá permisos totales (Superusuario).")
 
     class Meta:
         model = User
@@ -54,18 +68,24 @@ class AgenteEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Pre-popular campos del perfil si existen
-        if self.instance.pk and hasattr(self.instance, 'perfil_agente'):
-            self.fields['telefono'].initial = self.instance.perfil_agente.telefono
+        if self.instance.pk:
+            self.fields['es_administrador'].initial = self.instance.is_superuser
+            
+            if hasattr(self.instance, 'perfil_agente'):
+                self.fields['telefono'].initial = self.instance.perfil_agente.telefono
+                self.fields['biografia'].initial = self.instance.perfil_agente.biografia
             # Foto no se puede prepopular con valor, pero se maneja en visualización
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.is_superuser = self.cleaned_data['es_administrador']
         if commit:
             user.save()
             # Guardar perfil
             if hasattr(user, 'perfil_agente'):
                 perfil = user.perfil_agente
                 perfil.telefono = self.cleaned_data['telefono']
+                perfil.biografia = self.cleaned_data['biografia']
                 if self.cleaned_data['foto']:
                     perfil.foto = self.cleaned_data['foto']
                 perfil.save()

@@ -115,14 +115,21 @@
         <div class="agent-cta-card">
             <div class="agent-card-inner">
                 <div class="agent-image-wrapper">
-                    <!-- Placeholder image approximating the reference -->
-                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80" alt="Aguila Morena">
+                    {% if config_web.agente_principal.perfil_agente.foto %}
+                        <img src="{{ config_web.agente_principal.perfil_agente.foto.url }}" alt="{{ config_web.agente_principal.get_full_name }}">
+                    {% else %}
+                        <!-- Placeholder image approximating the reference -->
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80" alt="Agente Inmobiliario">
+                    {% endif %}
                 </div>
                 <div class="agent-card-content">
-                    <h3>Aguila Morena</h3>
-                    <a href="https://wa.me/51903423823" target="_blank" class="btn-whatsapp-cta">
+                    <h3>{{ config_web.agente_principal.get_full_name|default:"Tu Agente de Confianza" }}</h3>
+                    
+                    {% if config_web.agente_principal.perfil_agente.telefono %}
+                    <a href="https://wa.me/{{ config_web.agente_principal.perfil_agente.get_whatsapp_number }}" target="_blank" class="btn-whatsapp-cta">
                         <i class="fa-brands fa-whatsapp"></i> Comunícate
                     </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

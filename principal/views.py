@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from .models import Propiedad
-from .forms import PropiedadForm, PropiedadImagenFormSet, AgenteForm, AgenteEditForm
+from .models import Propiedad, ConfiguracionWeb
+from .forms import PropiedadForm, PropiedadImagenFormSet, AgenteForm, AgenteEditForm, ConfiguracionWebForm
 
 User = get_user_model()
 
@@ -85,9 +85,25 @@ def admin_dashboard(request):
     propiedades = Propiedad.objects.all().order_by('-creado_en')
     # Consideramos agentes a cualquier miembro del staff
     agentes = User.objects.filter(is_staff=True).order_by('username')
+    
+    # Configuración del sitio
+    config_obj = ConfiguracionWeb.objects.first()
+    if not config_obj:
+        config_obj = ConfiguracionWeb.objects.create()
+
+    if request.method == 'POST' and 'actualizar_config' in request.POST:
+        config_form = ConfiguracionWebForm(request.POST, instance=config_obj)
+        if config_form.is_valid():
+            config_form.save()
+            messages.success(request, 'Agente principal actualizado correctamente.')
+            return redirect('principal:admin_dashboard')
+    else:
+        config_form = ConfiguracionWebForm(instance=config_obj)
+
     return render(request, 'admin_dashboard.html', {
         'propiedades': propiedades,
-        'agentes': agentes
+        'agentes': agentes,
+        'config_form': config_form
     })
 
 @login_required

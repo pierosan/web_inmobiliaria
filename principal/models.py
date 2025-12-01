@@ -8,6 +8,7 @@ class Agente(models.Model):
     usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='perfil_agente')
     foto = models.ImageField(upload_to='agentes/', blank=True, null=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
+    biografia = models.TextField(blank=True, null=True, help_text="Breve descripción para la sección 'Sobre mí'")
 
     def get_whatsapp_number(self):
         if not self.telefono:
@@ -32,6 +33,35 @@ def guardar_perfil_agente(sender, instance, **kwargs):
         instance.perfil_agente.save()
     else:
         Agente.objects.create(usuario=instance)
+
+class ConfiguracionWeb(models.Model):
+    """
+    Modelo Singleton para guardar la configuración global del sitio.
+    Solo debería existir una fila en esta tabla.
+    """
+    agente_principal = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='configuracion_principal',
+        limit_choices_to={'is_staff': True},
+        help_text="Este agente será el contacto principal que aparecerá en el pie de página, contacto, etc."
+    )
+    
+    def __str__(self):
+        return "Configuración del Sitio Web"
+
+    def save(self, *args, **kwargs):
+        if not self.pk and ConfiguracionWeb.objects.exists():
+            # Si ya existe uno, actualizamos el primero en lugar de crear uno nuevo
+            # O lanzamos error. Para simplicidad, forzamos a que sea el ID 1 si queremos singleton estricto
+            # Pero aquí simplemente permitimos guardar y usaremos .first() en el view
+            pass
+        return super(ConfiguracionWeb, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = "Configuración Web"
+        verbose_name_plural = "Configuración Web"
 
 class Propiedad(models.Model):
     # Detalles básicos
