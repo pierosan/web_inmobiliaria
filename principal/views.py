@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.views import generic
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -19,6 +20,60 @@ class vistaAcerca(generic.TemplateView):
 
 class vistaContacto(generic.TemplateView):
     template_name = "contacto.html"
+
+class vistaBusquedaPropiedades(generic.ListView):
+    model = Propiedad
+    template_name = "lista_propiedades.html"
+    context_object_name = 'object_list'
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        qs = Propiedad.objects.all()
+        
+        if query:
+            qs = qs.filter(
+                Q(nombre__icontains=query) |
+                Q(direccion__icontains=query) |
+                Q(distrito__icontains=query) |
+                Q(ciudad__icontains=query) |
+                Q(departamento__icontains=query)
+            )
+
+        # Apply same filters as lista_propiedades if present (to support filtering on search results)
+        tipo = self.request.GET.get('tipo')
+        categoria = self.request.GET.get('categoria')
+        departamento = self.request.GET.get('departamento')
+        distrito = self.request.GET.get('distrito')
+        
+        if tipo:
+            qs = qs.filter(tipo=tipo)
+        if categoria:
+            qs = qs.filter(categoria=categoria)
+        if departamento:
+            qs = qs.filter(departamento=departamento)
+        if distrito:
+            qs = qs.filter(distrito=distrito)
+            
+        # Ordering
+        orden = self.request.GET.get('orden')
+        if orden == 'precio_asc':
+            qs = qs.order_by('precio')
+        elif orden == 'precio_desc':
+            qs = qs.order_by('-precio')
+        elif orden == 'antiguo':
+            qs = qs.order_by('creado_en')
+        else:
+            qs = qs.order_by('-creado_en')
+            
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['distritos'] = Propiedad.objects.values_list('distrito', flat=True).distinct().order_by('distrito')
+        context['departamentos'] = Propiedad.objects.values_list('departamento', flat=True).distinct().order_by('departamento')
+        context['tipos_choices'] = Propiedad.TIPO_OFERTA_CHOICES
+        context['categorias_choices'] = Propiedad.CATEGORIA_CHOICES
+        return context
 
 class vistaListaPropiedades(generic.ListView):
     model = Propiedad

@@ -9,7 +9,7 @@
         <h1>Tu mejor decisión empieza ahora</h1>
         <p>Ofrecemos soluciones personalizadas, escuchamos tus deseos, entendemos tus necesidades y te guiamos en cada paso.</p>
         
-        <form class="search-form" action="{# url 'url-de-busqueda' #}" method="GET">
+        <form class="search-form" action="{% url 'principal:buscar_propiedades' %}" method="GET">
             <input type="text" name="query" placeholder="Ingrese una dirección, estado, ciudad, código postal">
             <button type="submit">Buscar</button>
         </form>

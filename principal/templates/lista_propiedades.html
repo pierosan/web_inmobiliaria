@@ -66,6 +66,9 @@
 <!-- Filter Section -->
 <div class="container">
     <form method="GET" class="filter-bar">
+        {% if request.GET.query %}
+        <input type="hidden" name="query" value="{{ request.GET.query }}">
+        {% endif %}
         <div class="filter-group">
             <label for="tipo">Tipo</label>
             <select name="tipo" id="tipo">
@@ -126,7 +129,11 @@
 </div>
 
 <section class="listings-section" style="padding-top: 1rem;">
-  <h2>Propiedades</h2>
+  {% if request.GET.query %}
+    <h2>Resultados de búsqueda para: "{{ request.GET.query }}"</h2>
+  {% else %}
+    <h2>Todas las Propiedades</h2>
+  {% endif %}
 
   <div class="listings-grid">
     {% for propiedad in object_list %}
