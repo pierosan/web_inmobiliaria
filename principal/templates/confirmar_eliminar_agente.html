@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Eliminar Agente{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 500px; margin-top: 4rem; text-align: center;">
+  <div class="card shadow p-5">
+    <h2 class="text-danger mb-3">¿Estás seguro?</h2>
+    <p>Estás a punto de eliminar al agente <strong>{{ agente.username }}</strong>.</p>
+    <p class="text-muted">Esta acción no se puede deshacer y podría afectar las propiedades asignadas a este agente.</p>
+    
+    <form method="post" class="mt-4">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger px-4">Sí, eliminar</button>
+      <a href="{% url 'principal:admin_dashboard' %}" class="btn btn-secondary px-4">Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

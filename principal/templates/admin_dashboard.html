@@ -3,75 +3,233 @@
 {% block title %}Panel de Administración - Mi Inmobiliaria{% endblock %}
 
 {% block content %}
+<style>
+    .admin-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 1px;
+    }
+    .tab-btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        background: none;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #666;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+    }
+    .tab-btn.active {
+        color: var(--brand);
+        border-bottom-color: var(--brand);
+    }
+    .tab-btn:hover {
+        color: var(--brand);
+        background: #f8f9fa;
+    }
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .action-btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        margin: 0 2px;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    .action-btn:hover { background: rgba(0,0,0,0.05); }
+</style>
+
 <div style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
         <h1>Panel de Administración</h1>
-        <a href="{% url 'principal:crear_propiedad' %}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            <i class="fas fa-plus"></i> Nueva Propiedad
-        </a>
     </div>
 
-    <div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
-            <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                <tr>
-                    <th style="padding: 1rem; text-align: left;">Propiedad</th>
-                    <th style="padding: 1rem; text-align: left;">Categoría/Tipo</th>
-                    <th style="padding: 1rem; text-align: left;">Precio</th>
-                    <th style="padding: 1rem; text-align: left;">Ubicación</th>
-                    <th style="padding: 1rem; text-align: left;">Estado</th>
-                    <th style="padding: 1rem; text-align: center;">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for propiedad in propiedades %}
-                <tr style="border-bottom: 1px solid #dee2e6;">
-                    <td style="padding: 1rem;">
-                        <strong>{{ propiedad.nombre }}</strong><br>
-                        <small style="color: #6c757d;">Creado: {{ propiedad.creado_en|date:"d/m/Y" }}</small>
-                    </td>
-                    <td style="padding: 1rem;">
-                        <span style="display: block; font-weight: bold;">{{ propiedad.get_categoria_display }}</span>
-                        <span style="color: #6c757d; font-size: 0.9em;">{{ propiedad.get_tipo_display }}</span>
-                    </td>
-                    <td style="padding: 1rem;">
-                        S/ {{ propiedad.precio }}
-                    </td>
-                    <td style="padding: 1rem;">
-                        {{ propiedad.ciudad }}<br>
-                        <small>{{ propiedad.distrito }}</small>
-                    </td>
-                    <td style="padding: 1rem;">
-                        <span style="
-                            padding: 5px 10px; 
-                            border-radius: 15px; 
-                            font-size: 0.85em; 
-                            color: white;
-                            background-color: 
-                                {% if propiedad.estado_propiedad == 'DISPONIBLE' %}#28a745
-                                {% elif propiedad.estado_propiedad == 'NO_DISPONIBLE' %}#dc3545
-                                {% elif propiedad.estado_propiedad == 'NUEVO' %}#17a2b8
-                                {% elif propiedad.estado_propiedad == 'VENDIDO' %}#6c757d
-                                {% elif propiedad.estado_propiedad == 'ALQUILADO' %}#fd7e14
-                                {% else %}#343a40{% endif %};">
-                            {{ propiedad.get_estado_propiedad_display }}
-                        </span>
-                    </td>
-                    <td style="padding: 1rem; text-align: center; white-space: nowrap;">
-                        <a href="{% url 'principal:propiedad_detalle' pk=propiedad.pk %}" title="Ver" style="color: #17a2b8; margin-right: 10px;"><i class="fas fa-eye"></i></a>
-                        <a href="{% url 'principal:editar_propiedad' pk=propiedad.pk %}" title="Editar" style="color: #ffc107; margin-right: 10px;"><i class="fas fa-edit"></i></a>
-                        <a href="{% url 'principal:eliminar_propiedad' pk=propiedad.pk %}" title="Eliminar" style="color: #dc3545;"><i class="fas fa-trash"></i></a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" style="padding: 2rem; text-align: center; color: #6c757d;">
-                        No hay propiedades registradas.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Tabs Navigation -->
+    <div class="admin-tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'propiedades')">Propiedades</button>
+        <button class="tab-btn" onclick="openTab(event, 'agentes')">Agentes</button>
+    </div>
+
+    <!-- TAB: PROPIEDADES -->
+    <div id="propiedades" class="tab-content active">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+            <a href="{% url 'principal:crear_propiedad' %}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: 600;">
+                <i class="fas fa-plus"></i> Nueva Propiedad
+            </a>
+        </div>
+
+        <div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                    <tr>
+                        <th style="padding: 1rem; text-align: left;">Propiedad</th>
+                        <th style="padding: 1rem; text-align: left;">Categoría/Tipo</th>
+                        <th style="padding: 1rem; text-align: left;">Precio</th>
+                        <th style="padding: 1rem; text-align: left;">Ubicación</th>
+                        <th style="padding: 1rem; text-align: left;">Estado</th>
+                        <th style="padding: 1rem; text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for propiedad in propiedades %}
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 1rem;">
+                            <strong>{{ propiedad.nombre }}</strong><br>
+                            <small style="color: #6c757d;">Creado: {{ propiedad.creado_en|date:"d/m/Y" }}</small>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <span style="display: block; font-weight: bold;">{{ propiedad.get_categoria_display }}</span>
+                            <span style="color: #6c757d; font-size: 0.9em;">{{ propiedad.get_tipo_display }}</span>
+                        </td>
+                        <td style="padding: 1rem;">
+                            S/ {{ propiedad.precio }}
+                        </td>
+                        <td style="padding: 1rem;">
+                            {{ propiedad.ciudad }}<br>
+                            <small>{{ propiedad.distrito }}</small>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <span style="
+                                padding: 5px 10px; 
+                                border-radius: 15px; 
+                                font-size: 0.85em; 
+                                color: white;
+                                background-color: 
+                                    {% if propiedad.estado_propiedad == 'DISPONIBLE' %}#28a745
+                                    {% elif propiedad.estado_propiedad == 'NO_DISPONIBLE' %}#dc3545
+                                    {% elif propiedad.estado_propiedad == 'NUEVO' %}#17a2b8
+                                    {% elif propiedad.estado_propiedad == 'VENDIDO' %}#6c757d
+                                    {% elif propiedad.estado_propiedad == 'ALQUILADO' %}#fd7e14
+                                    {% else %}#343a40{% endif %};">
+                                {{ propiedad.get_estado_propiedad_display }}
+                            </span>
+                        </td>
+                        <td style="padding: 1rem; text-align: center; white-space: nowrap;">
+                            <a href="{% url 'principal:propiedad_detalle' pk=propiedad.pk %}" class="action-btn" title="Ver" style="color: #17a2b8;"><i class="fas fa-eye"></i></a>
+                            <a href="{% url 'principal:editar_propiedad' pk=propiedad.pk %}" class="action-btn" title="Editar" style="color: #ffc107;"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'principal:eliminar_propiedad' pk=propiedad.pk %}" class="action-btn" title="Eliminar" style="color: #dc3545;"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="padding: 2rem; text-align: center; color: #6c757d;">
+                            No hay propiedades registradas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TAB: AGENTES -->
+    <div id="agentes" class="tab-content">
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+            <a href="{% url 'principal:crear_agente' %}" style="background-color: var(--brand); color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: 600;">
+                <i class="fas fa-user-plus"></i> Nuevo Agente
+            </a>
+        </div>
+
+        <div style="background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                <thead style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                    <tr>
+                        <th style="padding: 1rem; text-align: center; width: 80px;">Foto</th>
+                        <th style="padding: 1rem; text-align: left;">Usuario</th>
+                        <th style="padding: 1rem; text-align: left;">Nombre Completo</th>
+                        <th style="padding: 1rem; text-align: left;">Email</th>
+                        <th style="padding: 1rem; text-align: center;">Activo</th>
+                        <th style="padding: 1rem; text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agente in agentes %}
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <td style="padding: 1rem; text-align: center;">
+                            {% if agente.perfil_agente.foto %}
+                                <img src="{{ agente.perfil_agente.foto.url }}" alt="Foto" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #e9ecef; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                    <i class="fas fa-user" style="color: #adb5bd;"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1rem;">
+                            <strong>{{ agente.username }}</strong>
+                        </td>
+                        <td style="padding: 1rem;">
+                            {{ agente.get_full_name|default:"-" }}
+                        </td>
+                        <td style="padding: 1rem;">
+                            {{ agente.email|default:"-" }}
+                        </td>
+                        <td style="padding: 1rem; text-align: center;">
+                            {% if agente.is_active %}
+                                <span style="color: #28a745;"><i class="fas fa-check-circle"></i> Sí</span>
+                            {% else %}
+                                <span style="color: #dc3545;"><i class="fas fa-times-circle"></i> No</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1rem; text-align: center; white-space: nowrap;">
+                            <a href="{% url 'principal:editar_agente' pk=agente.pk %}" class="action-btn" title="Editar" style="color: #ffc107;"><i class="fas fa-edit"></i></a>
+                            {% if request.user.pk != agente.pk %}
+                                <a href="{% url 'principal:eliminar_agente' pk=agente.pk %}" class="action-btn" title="Eliminar" style="color: #dc3545;"><i class="fas fa-trash"></i></a>
+                            {% else %}
+                                <span class="action-btn" title="No puedes eliminarte a ti mismo" style="color: #ccc; cursor: not-allowed;"><i class="fas fa-trash"></i></span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="padding: 2rem; text-align: center; color: #6c757d;">
+                            No hay agentes registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        
+        // Hide all tab contents
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            tabcontent[i].classList.remove("active");
+        }
+        
+        // Remove active class from all buttons
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        
+        // Show the specific tab content and add active class to button
+        document.getElementById(tabName).style.display = "block";
+        setTimeout(() => {
+             document.getElementById(tabName).classList.add("active");
+        }, 10);
+       
+        evt.currentTarget.classList.add("active");
+    }
+</script>
 {% endblock %}

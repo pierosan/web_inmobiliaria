@@ -2,8 +2,11 @@ from django.views import generic
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from .models import Propiedad
-from .forms import PropiedadForm, PropiedadImagenFormSet # Import PropiedadImagenFormSet
+from .forms import PropiedadForm, PropiedadImagenFormSet, AgenteForm, AgenteEditForm
+
+User = get_user_model()
 
 # --- Vistas Públicas ---
 
@@ -80,7 +83,12 @@ def es_admin(user):
 @user_passes_test(es_admin)
 def admin_dashboard(request):
     propiedades = Propiedad.objects.all().order_by('-creado_en')
-    return render(request, 'admin_dashboard.html', {'propiedades': propiedades})
+    # Consideramos agentes a cualquier miembro del staff
+    agentes = User.objects.filter(is_staff=True).order_by('username')
+    return render(request, 'admin_dashboard.html', {
+        'propiedades': propiedades,
+        'agentes': agentes
+    })
 
 @login_required
 @user_passes_test(es_admin)
@@ -125,3 +133,42 @@ def eliminar_propiedad(request, pk):
         messages.success(request, 'Propiedad eliminada correctamente.')
         return redirect('principal:admin_dashboard')
     return render(request, 'confirmar_eliminar.html', {'propiedad': propiedad})
+
+# --- Gestión de Agentes ---
+
+@login_required
+@user_passes_test(es_admin)
+def crear_agente(request):
+    if request.method == 'POST':
+        form = AgenteForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Agente creado exitosamente.')
+            return redirect('principal:admin_dashboard')
+    else:
+        form = AgenteForm()
+    return render(request, 'agente_form.html', {'form': form, 'titulo': 'Crear Nuevo Agente'})
+
+@login_required
+@user_passes_test(es_admin)
+def editar_agente(request, pk):
+    agente = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        form = AgenteEditForm(request.POST, request.FILES, instance=agente)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Datos del agente actualizados.')
+            return redirect('principal:admin_dashboard')
+    else:
+        form = AgenteEditForm(instance=agente)
+    return render(request, 'agente_form.html', {'form': form, 'titulo': f'Editar Agente: {agente.username}'})
+
+@login_required
+@user_passes_test(es_admin)
+def eliminar_agente(request, pk):
+    agente = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        agente.delete()
+        messages.success(request, 'Agente eliminado correctamente.')
+        return redirect('principal:admin_dashboard')
+    return render(request, 'confirmar_eliminar_agente.html', {'agente': agente})

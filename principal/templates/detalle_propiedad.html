@@ -152,20 +152,40 @@
   <aside class="sidebar">
     {% if propiedad.agente_inmobiliario %}
     <div class="agent-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 2rem;">
-      <h3 style="margin-bottom: 1rem;">Agente Inmobiliario</h3>
-      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-        <!-- Placeholder de avatar si no hay foto de perfil en User model -->
-        <div style="width: 60px; height: 60px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-user" style="font-size: 1.5rem; color: #bbb;"></i>
-        </div>
-        <div>
-          <h4 style="margin: 0;">{{ propiedad.agente_inmobiliario.get_full_name|default:propiedad.agente_inmobiliario.username }}</h4>
-          <p style="margin: 0; color: #666; font-size: 0.9rem;">{{ propiedad.agente_inmobiliario.email }}</p>
-        </div>
+      <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--fg); border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Agente Inmobiliario</h3>
+      
+      <!-- 1. Foto Centrada -->
+      <div style="text-align: center; margin-bottom: 1rem;">
+        {% if propiedad.agente_inmobiliario.perfil_agente.foto %}
+            <img src="{{ propiedad.agente_inmobiliario.perfil_agente.foto.url }}" alt="Foto del Agente" style="display: inline-block; width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        {% else %}
+            <div style="display: inline-flex; width: 120px; height: 120px; background: #f0f2f5; border-radius: 50%; align-items: center; justify-content: center; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <i class="fas fa-user" style="font-size: 3rem; color: #cbd5e0;"></i>
+            </div>
+        {% endif %}
       </div>
-      <a href="#" class="btn" style="display: block; text-align: center; background: #2ecc71; color: white; padding: 10px; border-radius: 5px; text-decoration: none; margin-bottom: 0.5rem;">
-        <i class="fab fa-whatsapp"></i> Contactar por WhatsApp
-      </a>
+      
+      <!-- 2. Nombre y Email Centrados -->
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+          <h4 style="margin: 0 0 0.5rem 0; font-size: 1.3rem; color: var(--fg); font-weight: 700;">
+              {{ propiedad.agente_inmobiliario.get_full_name|default:propiedad.agente_inmobiliario.username }}
+          </h4>
+          
+          {% if propiedad.agente_inmobiliario.email %}
+            <div style="margin: 0; color: #666; font-size: 0.95rem;">
+                <i class="fas fa-envelope me-2" style="color: var(--brand);"></i> {{ propiedad.agente_inmobiliario.email }}
+            </div>
+          {% endif %}
+      </div>
+      
+      <!-- 3. Botón WhatsApp (Bloque completo debajo) -->
+      {% if propiedad.agente_inmobiliario and propiedad.agente_inmobiliario.perfil_agente and propiedad.agente_inmobiliario.perfil_agente.telefono %}
+      <div style="text-align: center;">
+          <a href="https://wa.me/{{ propiedad.agente_inmobiliario.perfil_agente.get_whatsapp_number }}?text=Hola,%20estoy%20interesado%20en%20la%20propiedad%20{{ propiedad.nombre|urlencode }}" target="_blank" class="btn" style="display: block; width: 100%; background: #25D366; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; box-shadow: 0 4px 6px rgba(37, 211, 102, 0.2);">
+            <i class="fab fa-whatsapp" style="font-size: 1.2rem; margin-right: 5px;"></i> Contactar por WhatsApp
+          </a>
+      </div>
+      {% endif %}
     </div>
     {% endif %}
 

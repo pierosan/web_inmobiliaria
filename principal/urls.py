@@ -15,4 +15,9 @@ urlpatterns = [
     path("dashboard/crear/", views.crear_propiedad, name="crear_propiedad"),
     path("dashboard/editar/<int:pk>/", views.editar_propiedad, name="editar_propiedad"),
     path("dashboard/eliminar/<int:pk>/", views.eliminar_propiedad, name="eliminar_propiedad"),
+
+    # Rutas de Gestión de Agentes
+    path("dashboard/agentes/crear/", views.crear_agente, name="crear_agente"),
+    path("dashboard/agentes/editar/<int:pk>/", views.editar_agente, name="editar_agente"),
+    path("dashboard/agentes/eliminar/<int:pk>/", views.eliminar_agente, name="eliminar_agente"),
 ]

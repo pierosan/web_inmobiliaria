@@ -1,6 +1,37 @@
 from django.db import models
 from django.conf import settings # Import settings for AUTH_USER_MODEL
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import re
+
+class Agente(models.Model):
+    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='perfil_agente')
+    foto = models.ImageField(upload_to='agentes/', blank=True, null=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+
+    def get_whatsapp_number(self):
+        if not self.telefono:
+            return ""
+        return ''.join(filter(str.isdigit, self.telefono))
+
+    def __str__(self):
+        return f"Perfil de Agente: {self.usuario.username}"
+
+# Señales para crear/actualizar automáticamente el perfil de Agente
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def crear_perfil_agente(sender, instance, created, **kwargs):
+    if created:
+        # Crear perfil solo si es staff o si queremos que todos tengan perfil
+        # Por ahora creamos para todos para evitar errores, o filtramos por is_staff
+        Agente.objects.create(usuario=instance)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def guardar_perfil_agente(sender, instance, **kwargs):
+    # Guardar el perfil si existe, sino crearlo (safe guard)
+    if hasattr(instance, 'perfil_agente'):
+        instance.perfil_agente.save()
+    else:
+        Agente.objects.create(usuario=instance)
 
 class Propiedad(models.Model):
     # Detalles básicos
