@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<div class="container" style="max-width: 1200px; margin: 2rem auto;">
+    <h1 style="text-align: center; margin-bottom: 2rem;">{{ titulo }}</h1>
+    <div style="background-color: #fff; padding: 2rem; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.05);">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <!-- Fila 1: Nombre y Precio -->
+                <div style="grid-column: span 2;">
+                    {{ form.nombre.label_tag }}
+                    {{ form.nombre }}
+                    {% for error in form.nombre.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+
+                <!-- Fila 2: Etiquetas de Precio -->
+                <div>
+                    {{ form.antes_precio_etiqueta.label_tag }}
+                    {{ form.antes_precio_etiqueta }}
+                    {% for error in form.antes_precio_etiqueta.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div>
+                    {{ form.precio.label_tag }}
+                    {{ form.precio }}
+                    {% for error in form.precio.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div>
+                    {{ form.despues_precio_etiqueta.label_tag }}
+                    {{ form.despues_precio_etiqueta }}
+                    {% for error in form.despues_precio_etiqueta.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div>
+                    {{ form.categoria.label_tag }}
+                    {{ form.categoria }}
+                    {% for error in form.categoria.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+
+                <!-- Fila 3: Detalles Básicos -->
+                 <div>
+                    {{ form.tipo.label_tag }}
+                    {{ form.tipo }}
+                    {% for error in form.tipo.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                 <div>
+                    {{ form.estado_propiedad.label_tag }}
+                    {{ form.estado_propiedad }}
+                    {% for error in form.estado_propiedad.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div>
+                    {{ form.area_m2.label_tag }}
+                    {{ form.area_m2 }}
+                    {% for error in form.area_m2.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div>
+                    {{ form.dormitorios.label_tag }}
+                    {{ form.dormitorios }}
+                    {% for error in form.dormitorios.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div>
+                    {{ form.banos.label_tag }}
+                    {{ form.banos }}
+                    {% for error in form.banos.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                 <div>
+                    {{ form.agente_inmobiliario.label_tag }}
+                    {{ form.agente_inmobiliario }}
+                    {% for error in form.agente_inmobiliario.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+
+                <!-- Fila 4: Ubicación -->
+                <div style="grid-column: span 2;">
+                   <h3 style="margin: 1rem 0; border-bottom: 1px solid #eee;">Ubicación</h3>
+                </div>
+                <div style="grid-column: span 2;">
+                    {{ form.direccion.label_tag }}
+                    {{ form.direccion }}
+                    {% for error in form.direccion.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div>
+                    {{ form.distrito.label_tag }}
+                    {{ form.distrito }}
+                    {% for error in form.distrito.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                 <div>
+                    {{ form.ciudad.label_tag }}
+                    {{ form.ciudad }}
+                    {% for error in form.ciudad.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                 <div>
+                    {{ form.departamento.label_tag }}
+                    {{ form.departamento }}
+                    {% for error in form.departamento.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                 <div style="grid-column: span 2;">
+                    {{ form.ubicacion_url.label_tag }}
+                    {{ form.ubicacion_url }}
+                    {% for error in form.ubicacion_url.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                
+                <!-- MAPA -->
+                <div style="grid-column: span 2;">
+                    <label>Seleccionar ubicación en el mapa:</label>
+                    <div id="map" style="height: 400px; border-radius: 5px; border: 1px solid #ced4da;"></div>
+                    <p style="font-size: 0.8rem; color: #6c757d; margin-top: 0.5rem;">Haz clic en el mapa para establecer la ubicación.</p>
+                </div>
+
+                <!-- Latitud y Longitud (Ocultos pero actualizados por el mapa) -->
+                <div style="display: none;">
+                    {{ form.latitud.label_tag }}
+                    {{ form.latitud }}
+                    {% for error in form.latitud.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div style="display: none;">
+                    {{ form.longitud.label_tag }}
+                    {{ form.longitud }}
+                    {% for error in form.longit_ud.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+
+                 <!-- Fila 5: Multimedia -->
+                <div style="grid-column: span 2;">
+                   <h3 style="margin: 1rem 0; border-bottom: 1px solid #eee;">Multimedia y Detalles</h3>
+                </div>
+                <div style="grid-column: span 2;">
+                    {{ form.descripcion.label_tag }}
+                    {{ form.descripcion }}
+                    {% for error in form.descripcion.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                 <div style="grid-column: span 2;">
+                    {{ form.video.label_tag }}
+                    {{ form.video }}
+                    {% for error in form.video.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+                <div style="grid-column: span 2;">
+                    {{ form.planos_imagen.label_tag }}
+                    {{ form.planos_imagen }}
+                    {% for error in form.planos_imagen.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div style="grid-column: span 2;">
+                    <h4 style="margin: 1rem 0; border-bottom: 1px solid #eee;">Imágenes de la Propiedad</h4>
+                    <div id="image-formset-container">
+                        {% for img_form in formset %}
+                            <div class="image-formset-row" style="margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #eee; border-radius: 5px;">
+                                {{ img_form.id }} {# Hidden field for existing images #}
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    {% if img_form.instance.imagen %}
+                                        <img src="{{ img_form.instance.imagen.url }}" alt="Imagen actual" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px;">
+                                    {% endif %}
+                                    <div style="flex-grow: 1;">
+                                        {{ img_form.imagen.label_tag }}
+                                        {{ img_form.imagen }}
+                                        {% for error in img_form.imagen.errors %}<div class="error" style="color: #dc3545; font-size: 0.875rem;">{{ error }}</div>{% endfor %}
+                                    </div>
+                                    {% if formset.can_delete %}
+                                        <div style="display: none;">
+                                            {{ img_form.DELETE }}
+                                        </div>
+                                        <button type="button" class="delete-row-btn" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-left: 1rem;">
+                                            Eliminar
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" id="add-image-btn" style="background-color: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 0.5rem;">
+                        + Agregar otra imagen
+                    </button>
+                    
+                    <div id="empty-form" style="display: none;">
+                        <div class="image-formset-row" style="margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #eee; border-radius: 5px;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="flex-grow: 1;">
+                                    {{ formset.empty_form.imagen.label_tag }}
+                                    {{ formset.empty_form.imagen }}
+                                </div>
+                                <div style="display: none;">
+                                     {{ formset.empty_form.DELETE }}
+                                </div>
+                                <button type="button" class="delete-row-btn" style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-left: 1rem;">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <a href="{% url 'principal:admin_dashboard' %}" style="background-color: #6c757d; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;">
+                    Cancelar
+                </a>
+                 <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                    Guardar Propiedad
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Lógica del Mapa (Leaflet) ---
+        const latInput = document.getElementById('id_latitud');
+        const lngInput = document.getElementById('id_longitud');
+        
+        // Coordenadas por defecto (Lima, Perú) si no hay datos
+        let defaultLat = -12.046374;
+        let defaultLng = -77.042793;
+        let zoomLevel = 13;
+
+        // Si ya existen valores (modo edición), usarlos
+        if (latInput.value && lngInput.value) {
+            defaultLat = parseFloat(latInput.value);
+            defaultLng = parseFloat(lngInput.value);
+            zoomLevel = 16; // Zoom más cercano si ya hay ubicación
+        }
+
+        const map = L.map('map').setView([defaultLat, defaultLng], zoomLevel);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let marker;
+
+        // Si ya había coordenadas, poner el marcador inicial
+        if (latInput.value && lngInput.value) {
+            marker = L.marker([defaultLat, defaultLng]).addTo(map);
+        }
+
+        map.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+
+            // Actualizar campos ocultos
+            latInput.value = lat.toFixed(6);
+            lngInput.value = lng.toFixed(6);
+
+            // Mover o crear marcador
+            if (marker) {
+                marker.setLatLng(e.latlng);
+            } else {
+                marker = L.marker(e.latlng).addTo(map);
+            }
+        });
+
+        // --- Lógica de Imágenes (Formset) ---
+        const addImageBtn = document.getElementById('add-image-btn');
+        const formsetContainer = document.getElementById('image-formset-container');
+        const totalFormsInput = document.getElementById('id_imagenes-TOTAL_FORMS'); // Note the prefix 'imagenes' from view
+        const emptyFormTemplate = document.getElementById('empty-form').innerHTML;
+
+        addImageBtn.addEventListener('click', function() {
+            const formCount = parseInt(totalFormsInput.value);
+            const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formCount);
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newFormHtml;
+            
+            formsetContainer.appendChild(tempDiv.firstElementChild);
+            
+            totalFormsInput.value = formCount + 1;
+        });
+
+        // Event delegation for delete buttons
+        formsetContainer.addEventListener('click', function(e) {
+            if (e.target.closest('.delete-row-btn')) {
+                const row = e.target.closest('.image-formset-row');
+                const deleteCheckbox = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+                if (deleteCheckbox) {
+                    deleteCheckbox.checked = true;
+                    row.style.display = 'none';
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

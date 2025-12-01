@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Eliminación - Mi Inmobiliaria{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 4rem auto; padding: 0 1rem; text-align: center;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 1rem;"></i>
+        <h2 style="margin-bottom: 1rem;">¿Estás seguro?</h2>
+        <p style="margin-bottom: 2rem; color: #6c757d;">
+            Estás a punto de eliminar la propiedad "<strong>{{ propiedad.nombre }}</strong>". Esta acción no se puede deshacer.
+        </p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+                <button type="submit" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                    Sí, eliminar
+                </button>
+                <a href="{% url 'principal:admin_dashboard' %}" style="background-color: #6c757d; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px;">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

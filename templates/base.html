@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}Mi Inmobiliaria{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <link rel="stylesheet" href="{% static 'styles.css' %}?v=1.2">
   <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
@@ -27,18 +27,63 @@
   <header>
     {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'signup' %}
     <nav>
-      <a href="{% url 'principal:inicio' %}">Inicio</a>
-      <a href="{% url 'principal:lista_propiedades' %}">Propiedades</a>
-      <a href="{% url 'principal:acerca' %}">Acerca</a>
-      <a href="{% url 'principal:contacto' %}">Contacto</a>
+      <!-- Left: Logo -->
+      <div class="nav-left">
+        <a href="{% url 'principal:inicio' %}" class="logo">
+            <i class="fa-solid fa-house-chimney" style="color: var(--brand); font-size: 1.5rem;"></i>
+            <span>Mi Inmobiliaria</span>
+        </a>
+      </div>
 
-      {% if user.is_authenticated %}
-          <div style="display: flex;justify-content: center;align-items: center;">{{ user.username }}</div>
-          <a href="{% url 'acceso:logout' %}">Cerrar sesión</a>
+      <!-- Center: Links -->
+      <div class="nav-center">
+        <a href="{% url 'principal:inicio' %}">Inicio</a>
+        <a href="{% url 'principal:lista_propiedades' %}">Propiedades</a>
+        <a href="{% url 'principal:contacto' %}">Contacto</a>
+      </div>
+
+      <!-- Right: User / Auth -->
+      <div class="nav-right">
+        {% if user.is_authenticated %}
+          <div class="user-menu-container">
+             <div class="user-icon">
+                 <!-- Icono genérico de usuario -->
+                 <i class="fa-solid fa-circle-user"></i>
+             </div>
+             
+             <button class="menu-toggle" id="menuToggle">
+                 <i class="fa-solid fa-bars"></i>
+             </button>
+
+             <!-- Dropdown Menu -->
+             <div class="dropdown-menu" id="dropdownMenu">
+                 <div class="dropdown-header">
+                     <span class="user-name">{{ user.username }}</span>
+                 </div>
+                 <hr>
+                 {% if user.is_staff %}
+                   <a href="{% url 'principal:admin_dashboard' %}"><i class="fa-solid fa-gauge"></i> Panel de Control</a>
+                 {% else %}
+                    <!-- Placeholder si no es staff -->
+                    <a href="#"><i class="fa-solid fa-gauge"></i> Panel de Control</a>
+                 {% endif %}
+
+                 <a href="#"><i class="fa-solid fa-user"></i> Mi Perfil</a>
+                 <!-- Asumiendo links genéricos por ahora -->
+                 <a href="{% url 'principal:lista_propiedades' %}"><i class="fa-solid fa-list"></i> Mi Lista de Propiedades</a>
+                 <a href="{% url 'principal:crear_propiedad' %}"><i class="fa-solid fa-plus"></i> Agregar Nueva Propiedad</a>
+                 
+                 <hr>
+                 <a href="{% url 'acceso:logout' %}" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a>
+             </div>
+          </div>
         {% else %}
-          <a href="{% url 'acceso:login' %}">Iniciar sesión</a>
-          <a href="{% url 'acceso:registro' %}">Registrarse</a>
+          <div class="auth-buttons">
+             <a href="{% url 'acceso:login' %}">Iniciar sesión</a>
+             <a href="{% url 'acceso:registro' %}" class="btn">Registrarse</a>
+          </div>
         {% endif %}
+      </div>
     </nav>
     {% endif %}
   </header>
@@ -62,46 +107,52 @@
 
   
 <footer class="footer">
-  <div class="footer-container">
-    <div class="footer-column">
-      <h3>About Us</h3>
-      <p>
-        WP RESIDENCE is committed to delivering a high level of expertise,
-        customer service, and attention to detail to the marketing and sales of
-        luxury real estate, and rental properties.
-      </p>
-      <div class="footer-social">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-rss"></i></a>
-        <a href="#"><i class="fab fa-x-twitter"></i></a>
-        <a href="#"><i class="fab fa-google"></i></a>
-        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+  <div class="footer-content container">
+    <!-- Left Side: About Text -->
+    <div class="footer-about">
+      <h3>Sobre mi:</h3>
+      <p>Soy agente inmobiliario, especializada en la comercialización de propiedades comerciales, industriales y terrenos.</p>
+    </div>
+
+    <!-- Right Side: Copyright & Signature -->
+    <div class="footer-copyright">
+      <span>Todos los derechos reservados</span>
+      <!-- Signature/Logo Placeholder -->
+      <div class="footer-signature">
+         <!-- Using text for now or an image if available -->
+         <span style="font-family: cursive; font-size: 1.5rem; color: #ccc;">Aguila Morena</span>
       </div>
     </div>
-
-    <div class="footer-column">
-      <h3>Contacto</h3>
-      <p><i class="fas fa-map-marker-alt"></i> Calle de Toledo, 41, 28005 Madrid, Spain</p>
-      <p><i class="fas fa-phone"></i> (305) 555-4446</p>
-      <p><i class="fas fa-fax"></i> (305) 555-4446</p>
-      <p><i class="fas fa-envelope"></i> youremail@gmail.com</p>
-      <p><i class="fas fa-globe"></i> Nostro sitio</p>
-    </div>
-
-    <div class="footer-column">
-      <h3>SOCIAL LINKS</h3>
-      <div class="footer-social">
-        <a href="#"><i class="fab fa-facebook-f"></i></a>
-        <a href="#"><i class="fab fa-whatsapp"></i></a>
-        <a href="#"><i class="fab fa-telegram"></i></a>
-        <a href="#"><i class="fab fa-tiktok"></i></a>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer-bottom">
-    <p>Todos los derechos reservados. <a href="#">Privacy Policy</a></p>
   </div>
 </footer>
+
+<script>
+    // Toggle Dropdown Menu
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        
+        if (menuToggle && dropdownMenu) {
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault(); // Prevent any default button behavior
+                dropdownMenu.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!dropdownMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+            
+            // Close when pressing Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>

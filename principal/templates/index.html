@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 
@@ -16,31 +17,115 @@
 </section>
 
 <section class="listings-section">
-    <h2>Propiedades Destacadas</h2>
-    {% for propiedad in object_list%}
+    <h2>Propiedades Recientes</h2>
     <div class="listings-grid">
-    <a class="listing-card" href="{% url 'principal:propiedad_detalle' propiedad.id%}">
+        {% for propiedad in object_list %}
+        <div class="listing-card">
             <div class="listing-image">
-                <img src="{{propiedad.imagenes.first.imagen_url}}" alt="{{propiedad.nombre}}">
+                <a href="{% url 'principal:propiedad_detalle' propiedad.id %}" style="display:block; height:100%;">
+                    {% if propiedad.imagenes.first %}
+                        <img src="{{ propiedad.imagenes.first.imagen.url }}" alt="{{ propiedad.nombre }}">
+                    {% else %}
+                        <img src="https://dummyimage.com/600x400/e0e0e0/757575.png&text=Sin+Imagen" alt="Imagen no disponible">
+                    {% endif %}
+                </a>
                 <div class="listing-badges">
-                    <span class="badge-featured">Destacado</span>
-                    <span class="badge-status-sale">For Sale</span>
+                    {% if propiedad.tipo == 'VENTA' %}
+                        <span class="badge-status-sale">Venta</span>
+                    {% elif propiedad.tipo == 'ALQUILER' %}
+                        <span class="badge-status-rent">Alquiler</span>
+                    {% else %}
+                        <span class="badge-featured">{{ propiedad.get_tipo_display }}</span>
+                    {% endif %}
+                    
+                    {% if propiedad.estado_propiedad == 'NUEVO' %}
+                        <span class="badge-featured">Nuevo</span>
+                    {% endif %}
                 </div>
             </div>
+            
             <div class="listing-details">
-                <h3>{{propiedad.nombre}}</h3>
-                <p class="location">{{propiedad.direccion}}</p>
-                <p class="price">S/{{propiedad.precio}}</p>
+                <h3><a href="{% url 'principal:propiedad_detalle' propiedad.id %}">{{ propiedad.nombre }}</a></h3>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> {{ propiedad.distrito }}, {{ propiedad.ciudad }}</p>
+                
+                <p class="price">
+                    {% if propiedad.tipo == 'ALQUILER' %}
+                        S/ {{ propiedad.precio|floatformat:0|intcomma }} <span style="font-size:0.8em; font-weight:400; color:#666;">/mes</span>
+                    {% else %}
+                        S/ {{ propiedad.precio|floatformat:0|intcomma }}
+                    {% endif %}
+                </p>
+                
                 <div class="listing-specs">
-                    <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area_m2 }} m²</span>
+                    <span><i class="fa-solid fa-bed"></i> {{ propiedad.dormitorios }} Bed</span>
+                    <span><i class="fa-solid fa-bath"></i> {{ propiedad.banos }} Bath</span>
+                    <span><i class="fa-solid fa-ruler-combined"></i> {{ propiedad.area_m2|floatformat:0 }} m²</span>
+                </div>
+                
+                <div class="listing-agent">
+                   <div style="flex:1;"></div> <!-- Spacer -->
+                   <a href="{% url 'principal:propiedad_detalle' propiedad.id %}" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Ver Detalles</a>
                 </div>
             </div>
-        </a>
+        </div>
+        {% empty %}
+            <p style="text-align:center; width:100%; col-span:3;">No hay propiedades registradas aún.</p>
+        {% endfor %}
     </div>
-    {% endfor %}
     
     <div class="load-more-container">
-        <a href="{% url 'principal:lista_propiedades' %}" class="btn-load-more">Cargar Más Inmuebles</a>
+        <a href="{% url 'principal:lista_propiedades' %}" class="btn-load-more">Ver Todas las Propiedades</a>
+    </div>
+</section>
+
+<!-- NUEVA SECCIÓN: PROGRAME SU VISITA (Referencia seccion.png) -->
+<section class="agent-cta-section">
+    <div class="container agent-cta-grid">
+        <!-- Columna Izquierda: Texto Info -->
+        <div class="agent-cta-info">
+            <div class="cta-header">
+                <div class="icon-box-lg">
+                    <i class="fa-regular fa-calendar-days"></i>
+                </div>
+                <div>
+                    <h2>Programe su visita</h2>
+                    <p>Llámenos o escríbanos en cualquier momento, estamos aquí para responderte en menos de 24 horas.</p>
+                </div>
+            </div>
+            
+            <div class="cta-features">
+                <div class="feature-item">
+                    <i class="fa-solid fa-phone-volume"></i>
+                    <div>
+                        <h4>Nosotros te llamamos</h4>
+                        <p>Envíanos un mensaje y te contactaremos más rápido de lo que imaginas.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fa-solid fa-headset"></i>
+                    <div>
+                        <h4>Siempre listos para ayudarte</h4>
+                        <p>Atención real, sin esperas. Siempre disponibles para ti.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Card Agente -->
+        <div class="agent-cta-card">
+            <div class="agent-card-inner">
+                <div class="agent-image-wrapper">
+                    <!-- Placeholder image approximating the reference -->
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80" alt="Aguila Morena">
+                </div>
+                <div class="agent-card-content">
+                    <h3>Aguila Morena</h3>
+                    <a href="https://wa.me/51903423823" target="_blank" class="btn-whatsapp-cta">
+                        <i class="fa-brands fa-whatsapp"></i> Comunícate
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
