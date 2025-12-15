@@ -15,6 +15,7 @@ bash: source venv/bin/activate
 4. instalar libreria
 ```
 pip install django
+pip install Pillow
 ```
 
 5. Para ejecutar el servidor
